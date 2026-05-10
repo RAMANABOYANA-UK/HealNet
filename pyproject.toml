@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "healnet"
+version = "0.1.0"
+description = "HealNet: an MCP healthcare agent for patient chart summarization and care-gap detection"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "mcp>=1.2.0,<2.0.0",
+  "httpx>=0.27.0,<1.0.0",
+]
+
+[project.scripts]
+healnet = "healnet.server:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+healnet = ["demo_bundle.json"]

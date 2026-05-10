@@ -1,0 +1,132 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "healnet-demo",
+        "name": [
+          {
+            "family": "Rivera",
+            "given": ["Avery"]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1972-08-18",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+1-555-0101"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "code": {
+          "text": "Type 2 diabetes mellitus"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "code": {
+          "text": "Essential hypertension"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Metformin 500 mg oral tablet"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "effectiveDateTime": "2026-02-15T00:00:00Z",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "4548-4",
+              "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+            }
+          ],
+          "text": "Hemoglobin A1c"
+        },
+        "valueQuantity": {
+          "value": 8.4,
+          "unit": "%"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "effectiveDateTime": "2026-02-15T00:00:00Z",
+        "code": {
+          "text": "Blood pressure"
+        },
+        "component": [
+          {
+            "code": {
+              "text": "Systolic"
+            },
+            "valueQuantity": {
+              "value": 148,
+              "unit": "mmHg"
+            }
+          },
+          {
+            "code": {
+              "text": "Diastolic"
+            },
+            "valueQuantity": {
+              "value": 92,
+              "unit": "mmHg"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB"
+        },
+        "period": {
+          "start": "2025-06-15T00:00:00Z",
+          "end": "2025-06-15T00:30:00Z"
+        }
+      }
+    }
+  ]
+}
