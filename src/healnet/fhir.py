@@ -186,11 +186,27 @@ async def load_patient_snapshot(
                 resources = await client.search(resource_type, {"patient": patient_id, "_count": 100})
                 bundle["entry"].extend({"resource": resource} for resource in resources)
             except Exception:
+                # If a resource type fails, continue with what's available.
                 continue
         return _bundle_to_snapshot(bundle)
     except Exception as exc:
+        # Prefer detailed httpx exceptions when possible
+        warning_msg = None
+        try:
+            import httpx
+
+            if isinstance(exc, httpx.RequestError):
+                warning_msg = f"FHIR request failed: network error ({exc})."
+            elif isinstance(exc, httpx.HTTPStatusError):
+                warning_msg = f"FHIR request failed: HTTP {exc.response.status_code} {exc.response.reason_phrase}."
+        except Exception:
+            pass
+
+        if warning_msg is None:
+            warning_msg = f"FHIR request failed: {exc}."
+
         if not allow_demo_fallback:
             raise
         demo_path = Path(__file__).with_name("demo_bundle.json")
-        warnings = [f"FHIR request failed: {exc}. Loaded bundled demo data instead."]
+        warnings = [f"{warning_msg} Loaded bundled demo data instead."]
         return _bundle_to_snapshot(await load_bundle_from_path(demo_path), warnings=warnings)

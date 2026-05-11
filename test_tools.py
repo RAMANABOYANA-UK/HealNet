@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from healnet.fhir import load_patient_snapshot
 from healnet.care_gaps import identify_care_gaps, build_next_steps
+from healnet import server as server_module
 
 
 async def main():
@@ -77,6 +78,18 @@ async def main():
     print("1. Publish HealNet to Prompt Opinion marketplace")
     print("2. Configure FHIR_BASE_URL to connect to a real EHR")
     print("3. Set HEALNET_LLM_* for LLM-powered summaries (optional)")
+
+    # Extra: call the combined demo_payload tool to produce judge-friendly payload
+    print()
+    print("[EXTRA] Demo payload (compact):")
+    payload = await server_module.demo_payload("healnet-demo", None, None, None)
+    print("Summary:", payload.get("summary"))
+    print("Gaps:")
+    for gap in payload.get("care_gaps", []):
+        print(f" - {gap['title']} ({gap['priority']}): {gap.get('evidence_summary') or gap.get('reason')}")
+    print("Plan:")
+    for step in payload.get("follow_up_plan", []):
+        print(f" - {step}")
 
 
 if __name__ == "__main__":

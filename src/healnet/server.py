@@ -295,6 +295,39 @@ async def generate_patient_message(
     }
 
 
+@mcp.tool()
+async def demo_payload(
+    patient_id: str,
+    sharp_context: str | None = None,
+    fhir_base_url: str | None = None,
+    fhir_bearer_token: str | None = None,
+) -> dict[str, Any]:
+    """Return a compact payload with summary, care gaps, follow-up plan, and patient message for demo/judging."""
+    context = _parse_context(sharp_context)
+    resolved_patient_id = _resolve_param(explicit=patient_id, context=context, context_keys=["patient_id", "patientId", "subject_id"])
+    resolved_base_url = _resolve_param(explicit=fhir_base_url, context=context, context_keys=["fhir_base_url", "fhirBaseUrl", "fhir_url"], env_key="FHIR_BASE_URL")
+    resolved_token = _resolve_param(explicit=fhir_bearer_token, context=context, context_keys=["fhir_bearer_token", "fhirBearerToken", "fhir_token"], env_key="FHIR_BEARER_TOKEN")
+
+    snapshot = await load_patient_snapshot(
+        patient_id=resolved_patient_id or patient_id,
+        fhir_base_url=resolved_base_url,
+        bearer_token=resolved_token,
+    )
+    gaps = identify_care_gaps(snapshot)
+    plan = build_next_steps(snapshot, gaps)
+    summary = await _build_summary(snapshot, gaps, audience="judge")
+    msg_result = await generate_patient_message(patient_id=resolved_patient_id or patient_id, sharp_context=sharp_context, fhir_base_url=resolved_base_url, fhir_bearer_token=resolved_token)
+
+    return {
+        "summary": summary,
+        "patient": snapshot.get("patient"),
+        "care_gaps": gaps,
+        "follow_up_plan": plan,
+        "patient_message": msg_result.get("message") if isinstance(msg_result, dict) else None,
+        "warnings": snapshot.get("warnings"),
+    }
+
+
 def main() -> None:
     transport = os.getenv("HEALNET_TRANSPORT", "").strip()
     host = os.getenv("HEALNET_HOST", "127.0.0.1").strip()

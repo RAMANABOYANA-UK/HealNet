@@ -82,3 +82,16 @@ python test_tools.py
 ```
 
 Expected outcome: loads demo patient, detects care gaps, and produces follow-up plan output.
+
+## Judging Criteria Mapping
+
+AI Factor:
+- HealNet uses an optional LLM layer for natural-language summaries (`HEALNET_LLM_*`). Core care-gap logic is deterministic and rule-based for explainability; the LLM is used only for drafting clinician- and patient-friendly language where generative capability improves readability and reduces clinician time spent editing.
+
+Potential Impact:
+- Problem: manual chart review is time-consuming and error-prone.
+- HealNet hypothesis: automated chart summarization + prioritized care gaps can reduce time-to-decision for clinicians and care coordinators by 50% for routine chart reviews, enabling earlier outreach and closing care gaps faster.
+
+Feasibility:
+- Architecture: HealNet respects SHARP/FHIR context and accepts bearer tokens via SHARP headers or environment variables. It falls back to a demo bundle for safe demos. No PHI is stored by default; the server only reads FHIR resources at request time.
+- Safety: Deterministic gap detection ensures explainability; LLM outputs are optional and clearly separated from rule-based findings.

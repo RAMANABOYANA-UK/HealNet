@@ -207,6 +207,24 @@ def identify_care_gaps(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
                 )
             )
 
+    def _evidence_summary(evidence: dict[str, Any]) -> str:
+        parts: list[str] = []
+        if not evidence:
+            return ""
+        a1c = evidence.get("latest_a1c")
+        if a1c is not None:
+            parts.append(f"HbA1c={a1c}")
+        a1c_date = evidence.get("latest_a1c_date")
+        if a1c_date:
+            parts.append(f"A1cDate={a1c_date}")
+        bp = evidence.get("latest_bp") or {}
+        if isinstance(bp, dict) and bp.get("systolic") is not None and bp.get("diastolic") is not None:
+            parts.append(f"BP={int(bp['systolic'])}/{int(bp['diastolic'])}")
+        last_enc = evidence.get("last_encounter")
+        if last_enc:
+            parts.append(f"LastEncounter={last_enc}")
+        return ", ".join(parts)
+
     deduped: list[dict[str, Any]] = []
     seen_titles: set[str] = set()
     for gap in gaps:
@@ -219,6 +237,7 @@ def identify_care_gaps(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
                 "title": gap.title,
                 "reason": gap.reason,
                 "evidence": gap.evidence,
+                "evidence_summary": _evidence_summary(gap.evidence),
             }
         )
     return deduped
