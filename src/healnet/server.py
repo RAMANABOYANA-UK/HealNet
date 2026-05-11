@@ -51,12 +51,22 @@ def _add_fhir_context_extension(
 
 
 def create_server() -> FastMCP:
+    host = os.getenv("HEALNET_HOST", "127.0.0.1").strip()
+    port_text = os.getenv("HEALNET_PORT", "9000").strip()
+    try:
+        port = int(port_text)
+    except ValueError:
+        port = 9000
+
     server = FastMCP(
         "HealNet Superpower MCP",
         instructions=(
             "A healthcare MCP Superpower for chart summarization, care-gap detection, "
             "and follow-up plan generation using SHARP/FHIR context."
         ),
+        host=host,
+        port=port,
+        streamable_http_path="/mcp",
     )
     _add_fhir_context_extension(server)
     return server
@@ -329,23 +339,13 @@ async def demo_payload(
 
 
 def main() -> None:
-    transport = os.getenv("HEALNET_TRANSPORT", "").strip()
-    host = os.getenv("HEALNET_HOST", "127.0.0.1").strip()
-    port_text = os.getenv("HEALNET_PORT", "9000").strip()
-    run_kwargs: dict[str, Any] = {}
-    if transport:
-        run_kwargs["transport"] = transport
-        run_kwargs["host"] = host
-        try:
-            run_kwargs["port"] = int(port_text)
-        except ValueError:
-            run_kwargs["port"] = 9000
-
-    try:
-        mcp.run(**run_kwargs)
-    except TypeError:
-        # Compatibility fallback across FastMCP runtime variants.
-        mcp.run()
+    transport = os.getenv("HEALNET_TRANSPORT", "stdio").strip().lower()
+    if transport in {"http", "streamable-http", "streamable_http"}:
+        mcp.run(transport="streamable-http")
+    elif transport == "sse":
+        mcp.run(transport="sse")
+    else:
+        mcp.run(transport="stdio")
 
 
 if __name__ == "__main__":
