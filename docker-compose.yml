@@ -1,0 +1,15 @@
+services:
+  healnet:
+    build: .
+    ports:
+      - "9000:9000"
+    environment:
+      HEALNET_TRANSPORT: http
+      HEALNET_HOST: 0.0.0.0
+      HEALNET_PORT: 9000
+      FHIR_BASE_URL: ${FHIR_BASE_URL:-}
+      FHIR_BEARER_TOKEN: ${FHIR_BEARER_TOKEN:-}
+      HEALNET_LLM_BASE_URL: ${HEALNET_LLM_BASE_URL:-}
+      HEALNET_LLM_API_KEY: ${HEALNET_LLM_API_KEY:-}
+      HEALNET_LLM_MODEL: ${HEALNET_LLM_MODEL:-}
+    restart: unless-stopped

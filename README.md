@@ -62,6 +62,28 @@ $env:HEALNET_PORT="9000"
 python -m healnet.server
 ```
 
+## Public Deployment
+
+The easiest remote deployment path is Docker Compose:
+
+```powershell
+.\deploy_public.ps1
+```
+
+This publishes the MCP server on port `9000` and binds it to `0.0.0.0`, so the endpoint can be reached from your host or any public container platform you deploy it to.
+
+If you prefer manual Docker:
+
+```powershell
+docker compose up --build -d
+```
+
+Remote endpoint:
+
+```text
+http://<your-host>:9000/mcp
+```
+
 ## Environment Variables
 
 - FHIR_BASE_URL
