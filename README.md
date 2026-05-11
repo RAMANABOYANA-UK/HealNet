@@ -1,17 +1,20 @@
 # HealNet
 
-Healthcare MCP Superpower for Prompt Opinion.
+HealNet is my healthcare MCP Superpower built for Prompt Opinion.
 
-## Purpose
+I built it to solve one practical problem: clinicians and care coordinators spend too much time reading scattered chart data before deciding what to do next.
 
-HealNet converts SHARP/FHIR context into actionable outputs for care coordination:
+Instead of acting like a generic chatbot, HealNet takes SHARP/FHIR context and produces focused, actionable outputs that support real care workflow decisions.
 
-- patient chart summary
-- prioritized care-gap findings
-- follow-up plan
-- patient-facing message
+## What I Built
 
-## Exposed MCP Tools
+- A chart summarization flow for the current patient context
+- Deterministic care-gap detection with evidence-backed findings
+- A follow-up planning output with concrete next steps
+- A patient-friendly message generator
+- A compact demo payload for one-shot evaluation
+
+The MCP tools exposed by HealNet are:
 
 - `summarize_patient_chart`
 - `identify_care_gaps_tool`
@@ -19,40 +22,41 @@ HealNet converts SHARP/FHIR context into actionable outputs for care coordinatio
 - `generate_patient_message`
 - `demo_payload`
 
-## Key Characteristics
+## Core Idea
 
-- MCP-compatible and Prompt Opinion ready
-- deterministic care-gap logic with evidence fields
-- optional LLM layer for narrative wording
-- offline-safe demo mode via bundled FHIR sample
+The core design is intentional:
 
-## Local Setup
+- Deterministic clinical logic is used for critical findings, so outputs stay explainable.
+- Generative AI is optional and used only to improve language quality, not to decide clinical facts.
+- The same project works in both demo mode and real integration mode.
 
-```powershell
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
+This gives a better balance between safety, usefulness, and demo quality.
 
-## Local Validation
+## What Makes HealNet Different
 
-```powershell
-.\run_demo.ps1 -Mode validate
-```
+Most healthcare demos either look impressive but are hard to trust, or are rule-only systems with poor usability.
 
-## Run MCP Server
+HealNet is different because it combines:
 
-```powershell
-.\run_demo.ps1 -Mode server
-```
+- Standards-first interoperability (MCP + FHIR context)
+- Explainable and auditable care-gap reasoning
+- Practical outputs that are immediately usable in coordination workflows
+- A realistic path from hackathon demo to real deployment
 
-## Deploy (Docker Compose)
+## Why This Work Matters
 
-```powershell
-.\deploy_public.ps1
-```
+The value of HealNet is not just that it answers questions. It shortens the path from data to action.
 
-Server endpoint:
+That is the main goal of this project: reduce review overhead, surface what matters, and help teams act faster with clearer context.
+
+## Current Status
+
+- Implemented as a working MCP Superpower
+- Integrated with SHARP/FHIR-style context handling
+- Includes deterministic gap logic and optional LLM wording layer
+- Includes demo-safe fallback data and validation coverage
+
+This repository is the implementation of that full idea, not just a concept draft.
 
 ```text
 http://<host>:9000/mcp
