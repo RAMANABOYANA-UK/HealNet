@@ -1,27 +1,12 @@
 # HealNet
 
-HealNet is an MCP Superpower for Prompt Opinion that turns raw FHIR data into a clear care plan in seconds.
+HealNet is an MCP server for healthcare workflows in Prompt Opinion. It uses SHARP/FHIR context to summarize a patient chart, identify care gaps, and generate a follow-up plan.
 
-If a reviewer opens one healthcare repo, this should feel immediately useful: it reduces chart-reading noise, highlights what matters, and produces an action-focused summary that can be shown live in a demo.
+## Overview
 
-## What It Shows
+HealNet is designed to support care review and coordination tasks in a way that is explainable, reproducible, and compatible with real FHIR data.
 
-- Real healthcare interoperability with MCP + FHIR context
-- A practical workflow for chart review and care-gap detection
-- A judge-friendly demo path that works even without a live FHIR server
-- A clean story: input patient context, output actionable next steps
-
-## Why It Matters
-
-HealNet is designed to save clinicians and care coordinators time by turning raw chart data into a clear, actionable summary. The goal is not just to answer questions, but to make the next step obvious.
-
-## Why It Catches Attention
-
-- It solves a real workflow problem instead of being a generic chatbot
-- It shows both explainable logic and optional generative AI
-- It works with demo data, but is structured for real FHIR integration
-
-## Tools
+## Capabilities
 
 - `summarize_patient_chart`
 - `identify_care_gaps_tool`
@@ -31,25 +16,36 @@ HealNet is designed to save clinicians and care coordinators time by turning raw
 
 ## Notes
 
-- MCP Superpower with FHIR context support
-- Deterministic care-gap logic with optional LLM wording
-- Demo-friendly fallback data included
+- Supports SHARP/FHIR launch context
+- Uses deterministic care-gap logic with optional LLM-generated wording
+- Includes bundled demo data for offline evaluation
 
-## Files
+## Setup
 
-- `src/healnet/server.py`
-- `src/healnet/fhir.py`
-- `src/healnet/care_gaps.py`
-- `src/healnet/demo_bundle.json`
-- `run_demo.ps1`
-- `deploy_public.ps1`
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-## Quick Run
+## Run
+
+Validate the local workflow:
 
 ```powershell
 .\run_demo.ps1 -Mode validate
 ```
 
+Start the MCP server:
+
 ```powershell
 .\run_demo.ps1 -Mode server
 ```
+
+## Deployment
+
+```powershell
+.\deploy_public.ps1
+```
+
+The HTTP endpoint is exposed on port `9000` when deployed with Docker Compose.
