@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from types import MethodType
 from typing import Any
 
 import httpx
@@ -10,7 +11,58 @@ from mcp.server.fastmcp import FastMCP
 from .care_gaps import build_next_steps, identify_care_gaps
 from .fhir import load_patient_snapshot
 
-mcp = FastMCP("HealNet")
+_FHIR_CONTEXT_EXTENSION = "ai.promptopinion/fhir-context"
+_DEFAULT_FHIR_SCOPES: list[dict[str, str | bool]] = [
+    {"name": "patient/Patient.rs", "required": True},
+    {"name": "patient/Observation.rs"},
+    {"name": "patient/Condition.rs"},
+    {"name": "patient/MedicationRequest.rs"},
+    {"name": "patient/Encounter.rs"},
+]
+
+
+def _add_fhir_context_extension(
+    mcp_server: FastMCP,
+    scopes: list[dict[str, str | bool]] | None = None,
+    extension_name: str = _FHIR_CONTEXT_EXTENSION,
+) -> None:
+    """Expose Prompt Opinion FHIR context capability for Superpower discovery."""
+    selected_scopes = _DEFAULT_FHIR_SCOPES if scopes is None else scopes
+    original_get_capabilities = mcp_server._mcp_server.get_capabilities
+
+    def get_capabilities(self, notification_options, experimental_capabilities):
+        caps = original_get_capabilities(notification_options, experimental_capabilities)
+        existing_extensions = getattr(caps, "extensions", None) or {}
+        caps.extensions = {
+            **existing_extensions,
+            extension_name: {
+                "scopes": [
+                    {
+                        "name": str(scope.get("name", "")),
+                        "required": bool(scope.get("required", False)),
+                    }
+                    for scope in selected_scopes
+                ]
+            },
+        }
+        return caps
+
+    mcp_server._mcp_server.get_capabilities = MethodType(get_capabilities, mcp_server._mcp_server)
+
+
+def create_server() -> FastMCP:
+    server = FastMCP(
+        "HealNet Superpower MCP",
+        instructions=(
+            "A healthcare MCP Superpower for chart summarization, care-gap detection, "
+            "and follow-up plan generation using SHARP/FHIR context."
+        ),
+    )
+    _add_fhir_context_extension(server)
+    return server
+
+
+mcp = create_server()
 
 
 def _parse_context(raw_context: str | dict[str, Any] | None) -> dict[str, Any]:
@@ -244,7 +296,23 @@ async def generate_patient_message(
 
 
 def main() -> None:
-    mcp.run()
+    transport = os.getenv("HEALNET_TRANSPORT", "").strip()
+    host = os.getenv("HEALNET_HOST", "127.0.0.1").strip()
+    port_text = os.getenv("HEALNET_PORT", "9000").strip()
+    run_kwargs: dict[str, Any] = {}
+    if transport:
+        run_kwargs["transport"] = transport
+        run_kwargs["host"] = host
+        try:
+            run_kwargs["port"] = int(port_text)
+        except ValueError:
+            run_kwargs["port"] = 9000
+
+    try:
+        mcp.run(**run_kwargs)
+    except TypeError:
+        # Compatibility fallback across FastMCP runtime variants.
+        mcp.run()
 
 
 if __name__ == "__main__":

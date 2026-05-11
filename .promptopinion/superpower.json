@@ -1,0 +1,53 @@
+{
+  "name": "HealNet",
+  "type": "superpower",
+  "protocol": "mcp",
+  "description": "FHIR-aware healthcare MCP Superpower for chart summarization, care-gap detection, and follow-up planning.",
+  "transport": {
+    "mode": "http",
+    "host": "127.0.0.1",
+    "port": 9000,
+    "path": "/mcp"
+  },
+  "entrypoint": {
+    "command": "python",
+    "args": [
+      "-m",
+      "healnet.server"
+    ]
+  },
+  "capabilities": {
+    "extensions": {
+      "ai.promptopinion/fhir-context": {
+        "scopes": [
+          {
+            "name": "patient/Patient.rs",
+            "required": true
+          },
+          {
+            "name": "patient/Observation.rs",
+            "required": false
+          },
+          {
+            "name": "patient/Condition.rs",
+            "required": false
+          },
+          {
+            "name": "patient/MedicationRequest.rs",
+            "required": false
+          },
+          {
+            "name": "patient/Encounter.rs",
+            "required": false
+          }
+        ]
+      }
+    }
+  },
+  "tools": [
+    "summarize_patient_chart",
+    "identify_care_gaps_tool",
+    "draft_follow_up_plan",
+    "generate_patient_message"
+  ]
+}
