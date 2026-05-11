@@ -1,12 +1,17 @@
 # HealNet
 
-HealNet is an MCP server for healthcare workflows in Prompt Opinion. It uses SHARP/FHIR context to summarize a patient chart, identify care gaps, and generate a follow-up plan.
+Healthcare MCP Superpower for Prompt Opinion.
 
-## Overview
+## Purpose
 
-HealNet is designed to support care review and coordination tasks in a way that is explainable, reproducible, and compatible with real FHIR data.
+HealNet converts SHARP/FHIR context into actionable outputs for care coordination:
 
-## Capabilities
+- patient chart summary
+- prioritized care-gap findings
+- follow-up plan
+- patient-facing message
+
+## Exposed MCP Tools
 
 - `summarize_patient_chart`
 - `identify_care_gaps_tool`
@@ -14,13 +19,14 @@ HealNet is designed to support care review and coordination tasks in a way that 
 - `generate_patient_message`
 - `demo_payload`
 
-## Notes
+## Key Characteristics
 
-- Supports SHARP/FHIR launch context
-- Uses deterministic care-gap logic with optional LLM-generated wording
-- Includes bundled demo data for offline evaluation
+- MCP-compatible and Prompt Opinion ready
+- deterministic care-gap logic with evidence fields
+- optional LLM layer for narrative wording
+- offline-safe demo mode via bundled FHIR sample
 
-## Setup
+## Local Setup
 
 ```powershell
 python -m venv .venv
@@ -28,24 +34,26 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## Run
-
-Validate the local workflow:
+## Local Validation
 
 ```powershell
 .\run_demo.ps1 -Mode validate
 ```
 
-Start the MCP server:
+## Run MCP Server
 
 ```powershell
 .\run_demo.ps1 -Mode server
 ```
 
-## Deployment
+## Deploy (Docker Compose)
 
 ```powershell
 .\deploy_public.ps1
 ```
 
-The HTTP endpoint is exposed on port `9000` when deployed with Docker Compose.
+Server endpoint:
+
+```text
+http://<host>:9000/mcp
+```
