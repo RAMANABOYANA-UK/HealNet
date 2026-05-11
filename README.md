@@ -83,6 +83,20 @@ python test_tools.py
 
 Expected outcome: loads demo patient, detects care gaps, and produces follow-up plan output.
 
+## Quick Demo Launcher
+
+Use the bundled PowerShell helper for a fast judge-friendly flow:
+
+```powershell
+.\run_demo.ps1 -Mode validate
+```
+
+To start the MCP server for Prompt Opinion integration:
+
+```powershell
+.\run_demo.ps1 -Mode server
+```
+
 ## Judging Criteria Mapping
 
 AI Factor:
